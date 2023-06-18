@@ -11,17 +11,17 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 //TRACE ADDRESS FUNC START
 const tracedAddresses = new Set<string>(); // Specify the type for tracedAddresses
 
-bot.command("trace", (ctx) => {
-  const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
+bot.command("trace", async (ctx) => {
+  const address = ctx.message?.text?.split(" ")[1];
   if (address) {
-    tracedAddresses.add(address); // Add the traced address to the set
+    tracedAddresses.add(address);
     ctx.reply(`Address traced = ${address}`);
-    // Call the function from /lasttxn.ts with the traced address as an array
-    lastTxnFunction([address]); // Wrap the address in an array
+    await lastTxnFunction([address]); // Pass the bot instance as the first argument
   } else {
     ctx.reply("Please provide an address to trace.");
   }
 });
+
 
 // Handle the /untrace command to remove the traced address
 bot.command("untrace", (ctx) => {
@@ -79,6 +79,15 @@ bot.command("id", (ctx) => {
   }
 });
 
+if (process.env.NODE_ENV === "production") {
+  const app = express();
+  app.use(express.json());
+  app.use(webhookCallback(bot, "express"));
 
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Bot listening on port ${PORT}`);
+  });
+} else {
   bot.start();
-
+}
