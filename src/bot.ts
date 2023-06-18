@@ -1,22 +1,23 @@
 import { Bot, InlineKeyboard, webhookCallback } from "grammy";
 import { chunk } from "lodash";
 import express from "express";
-// import { lastTxnFunction } from "./lasttxn.ts";
+import { lastTxnFunction } from "./lasttxn";
 
 // Create a bot using the Telegram token
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 
 //TRACE ADDRESS FUNC START
-const tracedAddresses = new Set();
+//TRACE ADDRESS FUNC START
+const tracedAddresses = new Set<string>(); // Specify the type for tracedAddresses
 
 bot.command("trace", (ctx) => {
   const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
     tracedAddresses.add(address); // Add the traced address to the set
     ctx.reply(`Address traced = ${address}`);
-    // Call the function from /lasttxn.ts with the traced address
-    // lastTxnFunction(address);
+    // Call the function from /lasttxn.ts with the traced address as an array
+    lastTxnFunction([address]); // Wrap the address in an array
   } else {
     ctx.reply("Please provide an address to trace.");
   }
@@ -50,6 +51,7 @@ bot.command("untraceall", (ctx) => {
   ctx.reply("All addresses untraced.");
   // Perform any necessary cleanup or actions for removing all traced addresses
 });
+
 
 
 //TRACED FUNC END
