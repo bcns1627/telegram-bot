@@ -1,15 +1,23 @@
 import { Bot, InlineKeyboard, webhookCallback } from "grammy";
 import { chunk } from "lodash";
 import express from "express";
-
+// import { lastTxnFunction } from "./lasttxn";
 
 // Create a bot using the Telegram token
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-// Handle the /yo command to greet the user
-bot.command("yo", (ctx) => ctx.reply(`Yo n1ger ${ctx.from?.username}`));
 
-
+//TRACE ADDRESS FUNC
+bot.command("trace", (ctx) => {
+  const address = ctx.message?.text?.split(" ")[1]; // Extract the input address from the command
+  if (address) {
+    ctx.reply(`Address traced = ${address}`);
+    // Call your function with the traced address here
+    //lastTxnFunction(adress);
+  } else {
+    ctx.reply("Please provide an address to trace.");
+  }
+});
 
 
 const textEffectResponseAccessor = (
@@ -36,12 +44,6 @@ const parseTextEffectResponse = (
 };
 
 
-// Handle the /about command
-const aboutUrlKeyboard = new InlineKeyboard().url(
-  "Host your own bot for free.",
-  "https://cyclic.sh/"
-);
-
 // Suggest commands in the menu
 bot.api.setMyCommands([
   { command: "yo", description: "Be greeted by the bot" },
@@ -61,7 +63,6 @@ IM NIGGER WELCOME
 
 const replyWithIntro = (ctx: any) =>
   ctx.reply(introductionMessage, {
-    reply_markup: aboutUrlKeyboard,
     parse_mode: "HTML",
   });
 
