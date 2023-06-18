@@ -4,7 +4,6 @@ import axios, { AxiosResponse } from "axios";
 interface Transaction {
   hash: string;
   blockNumber: number;
-  timeStamp: string; // Add timeStamp property
 }
 
 // Function to retrieve the last transactions for an address from the PolygonScan API
@@ -14,17 +13,8 @@ async function getLastTransactions(address: string): Promise<Transaction[]> {
 
   try {
     const response: AxiosResponse = await axios.get(apiUrl);
-    const parsedResponse = response.data;
-    const transactions: Transaction[] = parsedResponse.result;
-
-    // Sort transactions by timeStamp in descending order
-    transactions.sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp));
-
-    // Specify the number of newest transactions you want to retrieve
-    const numberOfNewestTransactions = 5;
-    const newestTransactions = transactions.slice(0, numberOfNewestTransactions);
-
-    return newestTransactions;
+    const transactions: Transaction[] = response.data.result;
+    return transactions;
   } catch (error) {
     console.error(`Failed to retrieve transactions for address ${address}:`, error);
     return [];
