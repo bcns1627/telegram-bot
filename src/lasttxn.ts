@@ -23,7 +23,7 @@ async function getLastTransactions(address: string): Promise<Transaction[]> {
 
 // Function to send last transactions to a Telegram channel
 async function sendLastTransactionsToChannel(transactions: Transaction[], channel: string): Promise<void> {
-  const bot = new Bot("YOUR_TELEGRAM_BOT_TOKEN");
+  const bot = new Bot("TELEGRAM_TOKEN");
 
   for (const txn of transactions) {
     const message = `Transaction Hash: ${txn.hash}\nBlock Number: ${txn.blockNumber}`;
