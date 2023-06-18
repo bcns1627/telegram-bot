@@ -106,6 +106,18 @@ const replyWithIntro = (ctx: any) =>
 bot.command("start", replyWithIntro);
 bot.on("message", replyWithIntro);
 
+
+// Handle the /id command to get the channel ID
+bot.command("id", async (ctx) => {
+  const chat = ctx.message?.chat;
+  if (chat?.type === "channel") {
+    const channelId = chat.id;
+    ctx.reply(`Channel ID: ${channelId}`);
+  } else {
+    ctx.reply("This command can only be used in a channel.");
+  }
+});
+
 // Start the server
 if (process.env.NODE_ENV === "production") {
   // Use Webhooks for the production server
