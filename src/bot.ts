@@ -67,6 +67,7 @@ bot.api.setMyCommands([
 ]);
 
 
+// Handle the /id command to get the channel ID
 // Handle the /id command to get the group chat ID
 bot.command("id", (ctx) => {
   const chat = ctx.chat;
@@ -74,8 +75,6 @@ bot.command("id", (ctx) => {
     const groupId = chat.id;
     const chatLink = `[Group Chat ID](https://t.me/c/${groupId.toString().substring(4)})`;
     ctx.reply(`Group Chat ID: ${chatLink}`, { parse_mode: "Markdown" });
-    const formattedId = `\`${groupId}\``;
-    ctx.reply(`Group Chat ID: ${formattedId}`, { parse_mode: "MarkdownV2" });
   } else {
     ctx.reply("This command can only be used in a group chat.");
   }
