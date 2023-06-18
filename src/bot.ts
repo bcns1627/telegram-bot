@@ -11,17 +11,17 @@ const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 //TRACE ADDRESS FUNC START
 const tracedAddresses = new Set<string>(); // Specify the type for tracedAddresses
 
-bot.command("trace", async (ctx) => {
-  const address = ctx.message?.text?.split(" ")[1];
+bot.command("trace", (ctx) => {
+  const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
-    tracedAddresses.add(address);
+    tracedAddresses.add(address); // Add the traced address to the set
     ctx.reply(`Address traced = ${address}`);
-    await lastTxnFunction([address]); // Pass the bot instance as the first argument
+    // Call the function from /lasttxn.ts with the traced address as an array
+    lastTxnFunction([address]); // Wrap the address in an array
   } else {
     ctx.reply("Please provide an address to trace.");
   }
 });
-
 
 // Handle the /untrace command to remove the traced address
 bot.command("untrace", (ctx) => {
