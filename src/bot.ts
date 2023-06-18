@@ -70,11 +70,11 @@ bot.api.setMyCommands([
 // Handle the /id command to get the channel ID
 bot.command("id", (ctx) => {
   const chat = ctx.chat;
-  if (chat?.type === "channel") {
-    const channelId = chat.id;
-    ctx.reply(`Channel ID: ${channelId}`);
+  if (chat?.type === "group" || chat?.type === "supergroup") {
+    const groupId = chat.id;
+    ctx.reply(`Group Chat ID: ${groupId}`);
   } else {
-    ctx.reply("This command can only be used in a channel.");
+    ctx.reply("This command can only be used in a group chat.");
   }
 });
 
