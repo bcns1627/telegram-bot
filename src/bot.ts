@@ -4,7 +4,7 @@ import express from "express";
 import { lastTxnFunction } from "./lasttxn";
 
 // Create a bot using the Telegram token
-const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
+export const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 
 //TRACE ADDRESS FUNC START
