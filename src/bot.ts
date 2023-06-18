@@ -67,7 +67,6 @@ bot.api.setMyCommands([
 ]);
 
 
-// Handle the /id command to get the channel ID
 // Handle the /id command to get the group chat ID
 bot.command("id", (ctx) => {
   const chat = ctx.chat;

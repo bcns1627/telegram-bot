@@ -1,13 +1,13 @@
+import { Bot } from "grammy";
 import axios, { AxiosResponse } from "axios";
-import express from "express";
-import { Bot, webhookCallback } from "grammy";
 
 interface Transaction {
   hash: string;
   blockNumber: number;
-  timeStamp: string;
+  timeStamp: string; // Add timeStamp property
 }
 
+// Function to retrieve the last transactions for an address from the PolygonScan API
 async function getLastTransactions(address: string): Promise<Transaction[]> {
   const API_KEY: string = "POLYGONSCAN_API_KEY";
   const apiUrl: string = `https://api.polygonscan.com/api?module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=10&sort=desc&apikey=${API_KEY}`;
@@ -17,8 +17,10 @@ async function getLastTransactions(address: string): Promise<Transaction[]> {
     const parsedResponse = response.data;
     const transactions: Transaction[] = parsedResponse.result;
 
+    // Sort transactions by timeStamp in descending order
     transactions.sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp));
 
+    // Specify the number of newest transactions you want to retrieve
     const numberOfNewestTransactions = 5;
     const newestTransactions = transactions.slice(0, numberOfNewestTransactions);
 
@@ -29,6 +31,7 @@ async function getLastTransactions(address: string): Promise<Transaction[]> {
   }
 }
 
+// Function to send last transactions to a Telegram channel
 async function sendLastTransactionsToChannel(transactions: Transaction[], channel: string): Promise<void> {
   const bot = new Bot("TELEGRAM_TOKEN");
 
@@ -43,26 +46,10 @@ async function sendLastTransactionsToChannel(transactions: Transaction[], channe
   }
 }
 
+// Main function to be called with a list of addresses
 export async function lastTxnFunction(addresses: string[]): Promise<void> {
   for (const address of addresses) {
     const transactions: Transaction[] = await getLastTransactions(address);
     await sendLastTransactionsToChannel(transactions, "YOUR_TELEGRAM_CHANNEL_ID");
   }
 }
-
-// Set up the webhook
-const app = express();
-app.use(express.json());
-
-const bot = new Bot("TELEGRAM_TOKEN");
-app.use(webhookCallback(bot, "express"));
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Bot listening on port ${PORT}`);
-});
-
-// Log any errors that occur during the bot's runtime
-bot.catch((err) => {
-  console.error("An error occurred:", err);
-});
