@@ -57,30 +57,6 @@ bot.command("untraceall", (ctx) => {
 //TRACED FUNC END
 
 
-const textEffectResponseAccessor = (
-  originalText: string,
-  modifiedText?: string
-) =>
-  `Original: ${originalText}` +
-  (modifiedText ? `\nModified: ${modifiedText}` : "");
-
-const parseTextEffectResponse = (
-  response: string
-): {
-  originalText: string;
-  modifiedText?: string;
-} => {
-  const originalText = (response.match(/Original: (.*)/) as any)[1];
-  const modifiedTextMatch = response.match(/Modified: (.*)/);
-
-  let modifiedText;
-  if (modifiedTextMatch) modifiedText = modifiedTextMatch[1];
-
-  if (!modifiedTextMatch) return { originalText };
-  else return { originalText, modifiedText };
-};
-
-
 // Suggest commands in the menu
 bot.api.setMyCommands([
   { command: "yo", description: "Be greeted by the bot" },
@@ -89,22 +65,6 @@ bot.api.setMyCommands([
     description: "Apply text effects on the text. (usage: /effect [text])",
   },
 ]);
-
-// Handle all other messages and the /start command
-const introductionMessage = `Hello! I'm a Telegram NIGERIAN bot.
-IM NIGGER WELCOME
-
-<b>Commands</b>
-/XD - GETTING FUCKED
-`
-
-const replyWithIntro = (ctx: any) =>
-  ctx.reply(introductionMessage, {
-    parse_mode: "HTML",
-  });
-
-bot.command("start", replyWithIntro);
-bot.on("message", replyWithIntro);
 
 
 // Handle the /id command to get the channel ID
