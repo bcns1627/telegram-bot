@@ -44,6 +44,13 @@ bot.command("traced", (ctx) => {
   }
 });
 
+// Handle the /untraceall command to remove all traced addresses
+bot.command("untraceall", (ctx) => {
+  tracedAddresses.clear(); // Clear all traced addresses from the set
+  ctx.reply("All addresses untraced.");
+  // Perform any necessary cleanup or actions for removing all traced addresses
+});
+
 
 //TRACED FUNC END
 
