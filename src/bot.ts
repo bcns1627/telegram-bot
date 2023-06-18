@@ -1,23 +1,51 @@
 import { Bot, InlineKeyboard, webhookCallback } from "grammy";
 import { chunk } from "lodash";
 import express from "express";
-// import { lastTxnFunction } from "./lasttxn";
+// import { lastTxnFunction } from "./lasttxn.ts";
 
 // Create a bot using the Telegram token
 const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
 
-//TRACE ADDRESS FUNC
+//TRACE ADDRESS FUNC START
+const tracedAddresses = new Set();
+
 bot.command("trace", (ctx) => {
-  const address = ctx.message?.text?.split(" ")[1]; // Extract the input address from the command
+  const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
+    tracedAddresses.add(address); // Add the traced address to the set
     ctx.reply(`Address traced = ${address}`);
-    // Call your function with the traced address here
-    //lastTxnFunction(adress);
+    // Call the function from /lasttxn.ts with the traced address
+    // lastTxnFunction(address);
   } else {
     ctx.reply("Please provide an address to trace.");
   }
 });
+
+// Handle the /untrace command to remove the traced address
+bot.command("untrace", (ctx) => {
+  const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
+  if (address) {
+    tracedAddresses.delete(address); // Remove the traced address from the set
+    ctx.reply(`Address untraced = ${address}`);
+    // Perform any necessary cleanup or actions for removing the traced address
+  } else {
+    ctx.reply("Please provide an address to untrace.");
+  }
+});
+
+// Handle the /traced command to show the traced addresses
+bot.command("traced", (ctx) => {
+  if (tracedAddresses.size > 0) {
+    const tracedList = Array.from(tracedAddresses).join("\n");
+    ctx.reply(`Traced addresses:\n${tracedList}`);
+  } else {
+    ctx.reply("No addresses are currently traced.");
+  }
+});
+
+
+//TRACED FUNC END
 
 
 const textEffectResponseAccessor = (
