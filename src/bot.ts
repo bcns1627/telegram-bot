@@ -4,20 +4,47 @@ import { lastTxnFunction } from "./lasttxn";
 // Create a bot using the Telegram token
 export const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-//TRACE ADDRESS FUNC START
+// TRACE ADDRESS FUNC START
 const tracedAddresses = new Set<string>(); // Specify the type for tracedAddresses
 
-bot.command("trace", (ctx) => {
+bot.command("trace", async (ctx) => {
   const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
     tracedAddresses.add(address); // Add the traced address to the set
     ctx.reply(`Address traced = ${address}`);
     // Call the function from /lasttxn.ts with the traced address as an array
+    await sendMessageWithRetry(ctx, `Address traced = ${address}`);
     lastTxnFunction([address]); // Wrap the address in an array
   } else {
     ctx.reply("Please provide an address to trace.");
   }
 });
+
+// Helper function to send message with retry
+async function sendMessageWithRetry(ctx: any, message: string, retryCount = 3, delay = 1000) {
+  while (retryCount > 0) {
+    try {
+      await ctx.reply(message);
+      return;
+    } catch (error: any) {
+      if (error.description === 'Too Many Requests: retry after 5' && retryCount > 0) {
+        await wait(delay);
+        delay *= 2; // Exponential backoff
+        retryCount--;
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+// Helper function to wait for a specific time
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 
 // Handle the /untrace command to remove the traced address
 bot.command("untrace", (ctx) => {
