@@ -1,26 +1,29 @@
 import { Bot, InlineKeyboard, webhookCallback } from "grammy";
 import { chunk } from "lodash";
 import express from "express";
+import axios from "axios";
 import { lastTxnFunction } from "./lasttxn";
 
 // Create a bot using the Telegram token
 export const bot = new Bot(process.env.TELEGRAM_TOKEN || "");
 
-// TRACE ADDRESS FUNC START
+//TRACE ADDRESS FUNC START
 const tracedAddresses = new Set<string>(); // Specify the type for tracedAddresses
 
-bot.command("/commands/trace", (ctx) => {
+bot.command("trace", (ctx) => {
   const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
     tracedAddresses.add(address); // Add the traced address to the set
     ctx.reply(`Address traced = ${address}`);
-    lastTxnFunction([address]); // Call the function from /lasttxn.ts with the traced address as an array
+    // Call the function from /lasttxn.ts with the traced address as an array
+    lastTxnFunction([address]); // Wrap the address in an array
   } else {
     ctx.reply("Please provide an address to trace.");
   }
 });
 
-bot.command("/commands/untrace", (ctx) => {
+// Handle the /untrace command to remove the traced address
+bot.command("untrace", (ctx) => {
   const address = ctx.message?.text?.split(" ")[1]; // Extract the address from the command
   if (address) {
     tracedAddresses.delete(address); // Remove the traced address from the set
@@ -31,7 +34,8 @@ bot.command("/commands/untrace", (ctx) => {
   }
 });
 
-bot.command("/commands/traced", (ctx) => {
+// Handle the /traced command to show the traced addresses
+bot.command("traced", (ctx) => {
   if (tracedAddresses.size > 0) {
     const tracedList = Array.from(tracedAddresses).join("\n");
     ctx.reply(`Traced addresses:\n${tracedList}`);
@@ -40,25 +44,24 @@ bot.command("/commands/traced", (ctx) => {
   }
 });
 
-bot.command("/commands/untraceall", (ctx) => {
+// Handle the /untraceall command to remove all traced addresses
+bot.command("untraceall", (ctx) => {
   tracedAddresses.clear(); // Clear all traced addresses from the set
   ctx.reply("All addresses untraced.");
   // Perform any necessary cleanup or actions for removing all traced addresses
 });
 
-// TRACED FUNC END
-
 // Suggest commands in the menu
 bot.api.setMyCommands([
-  { command: "/commands/yo", description: "Be greeted by the bot" },
+  { command: "yo", description: "Be greeted by the bot" },
   {
-    command: "/commands/effect",
+    command: "effect",
     description: "Apply text effects on the text. (usage: /effect [text])",
   },
 ]);
 
-// Handle the /commands/id command to get the group chat ID
-bot.command("/commands/id", (ctx) => {
+// Handle the /id command to get the group chat ID
+bot.command("id", (ctx) => {
   const chat = ctx.chat;
   if (chat?.type === "group" || chat?.type === "supergroup") {
     const groupId = chat.id;
@@ -69,16 +72,31 @@ bot.command("/commands/id", (ctx) => {
   }
 });
 
+// Set the webhook URL
+async function setWebhook() {
+  try {
+    const webhookUrl = `${process.env.CYCLIC_URL}`; // Replace with your actual webhook URL
+    const response = await axios.post(
+      `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/setWebhook`,
+      { url: webhookUrl }
+    );
+    console.log("Webhook set:", response.data);
+  } catch (error) {
+    console.error("Failed to set webhook:", error);
+  }
+}
+
 // Start the server
 if (process.env.NODE_ENV === "production") {
   // Use Webhooks for the production server
   const app = express();
   app.use(express.json());
-  app.use('/commands', webhookCallback(bot, "express"));
+  app.use(webhookCallback(bot, "express"));
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Bot listening on port ${PORT}`);
+    setWebhook(); // Call the setWebhook function when the server starts
   });
 } else {
   // Use Long Polling for development
