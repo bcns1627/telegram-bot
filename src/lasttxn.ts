@@ -1,6 +1,6 @@
 import { Bot } from "grammy";
 import axios, { AxiosResponse } from "axios";
-import { bot } from "./bot";
+
 
 interface Transaction {
   hash: string;
