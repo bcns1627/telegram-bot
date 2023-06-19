@@ -48,8 +48,6 @@ function wait(ms) {
   });
 }
 
-// Rest of the code...
-
 // Start the bot using long polling
 bot.start({
   polling: true,
