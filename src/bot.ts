@@ -75,7 +75,7 @@ bot.command("id", (ctx) => {
 // Set the webhook URL
 async function setWebhook() {
   try {
-    const webhookUrl = `${process.env.CYCLIC_URL}`; // Replace with your actual webhook URL
+    const webhookUrl = "https://your-webhook-url.com"; // Replace with your actual webhook URL
     const response = await axios.post(
       `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/setWebhook`,
       { url: webhookUrl }
@@ -85,6 +85,9 @@ async function setWebhook() {
     console.error("Failed to set webhook:", error);
   }
 }
+
+// Call the setWebhook function
+setWebhook();
 
 // Start the server
 if (process.env.NODE_ENV === "production") {
@@ -96,7 +99,6 @@ if (process.env.NODE_ENV === "production") {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Bot listening on port ${PORT}`);
-    setWebhook(); // Call the setWebhook function when the server starts
   });
 } else {
   // Use Long Polling for development
