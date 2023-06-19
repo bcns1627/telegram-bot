@@ -4,7 +4,7 @@
     "module": "CommonJS",
     "outDir": "dist"
   },
-  "include": ["src/bot.js", "environment.d.ts"],
+  "include": ["node src/bot.js", "environment.d.ts"],
   "exclude": ["node_modules"]
   
 }
