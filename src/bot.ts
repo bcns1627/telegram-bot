@@ -1,7 +1,4 @@
-import { Bot, InlineKeyboard, webhookCallback } from "grammy";
-import { chunk } from "lodash";
-import express from "express";
-import axios from "axios";
+import { Bot } from "grammy";
 import { lastTxnFunction } from "./lasttxn";
 
 // Create a bot using the Telegram token
@@ -72,35 +69,5 @@ bot.command("id", (ctx) => {
   }
 });
 
-// Set the webhook URL
-async function setWebhook() {
-  try {
-    const webhookUrl = "https://your-webhook-url.com"; // Replace with your actual webhook URL
-    const response = await axios.post(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/setWebhook`,
-      { url: webhookUrl }
-    );
-    console.log("Webhook set:", response.data);
-  } catch (error) {
-    console.error("Failed to set webhook:", error);
-  }
-}
-
-// Call the setWebhook function
-setWebhook();
-
-// Start the server
-if (process.env.NODE_ENV === "production") {
-  // Use Webhooks for the production server
-  const app = express();
-  app.use(express.json());
-  app.use(webhookCallback(bot, "express"));
-
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Bot listening on port ${PORT}`);
-  });
-} else {
-  // Use Long Polling for development
-  bot.start();
-}
+// Start the bot
+bot.start();
