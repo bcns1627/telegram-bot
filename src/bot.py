@@ -13,5 +13,5 @@ dispatcher = updater.dispatcher
 # Register a command handler for the /start command
 dispatcher.add_handler(CommandHandler('start', start))
 
-# Start the bot
+# Start the botS 
 updater.start_polling()
